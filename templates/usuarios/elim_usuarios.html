@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+
+<body>
+    <div class="container py-2">
+
+        <div>
+
+            {% block contenido %}
+
+            <hr>
+
+            <div class="row negrita col-xs-12 col-sm-12 col-md-12 col-lg-12 justify-content-center align-self-center">
+                <span>
+                    <h5>ELIMINAR USUARIO DEL SISTEMA</h5>
+                </span>
+            </div>
+            <br>
+
+            <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                    <label for="" style="font-weight:bold; color:black; ">Identif. Usuario:</label>
+                    <input type="text" style="width: 50%;" value="12.345.678" disabled  class="border border-danger">
+                    
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-8 ">
+                    <label for="" style="font-weight:bold; color:black; ">Nombre Completo:</label>
+                    
+                    <input type="text" style="width: 50%;" value="Usuario BBB" disabled class="border border-danger">
+                    
+                </div>
+            </div>
+            <br>
+            <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                    <label for="" style="font-weight:bold; color:black; ">Contraseña:</label>
+                    
+                    <input type="password" style="width: 50%;" value="*********" disabled  class="border border-danger">
+
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                    <label for="" style="font-weight:bold; color:black; ">Confirmar Contraseña:</label>
+                    
+                    <input type="password" style="width: 50%;" value="*********" disabled  class="border border-danger">
+                    
+                </div>
+            </div>
+            <br>
+
+            <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12     ">
+
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <label for="" style="font-weight:bold; color:black; ">Asignar Rol / Perfil:</label>
+                    <select class="custom-select border border-danger" style="font-size: 12px;" disabled >
+                        <option value="0">Select Perfil:</option>
+                        <option value="1" selected>Superadministrador</option>
+                        <option value="2">Administrador</option>
+                        <option value="3">Usuario Final</option>
+                    </select>
+                    
+                </div>
+            </div>
+
+            <hr>
+            <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 py-2 px-5 justify-content-center align-self-center">
+                <a href="{{ url_for('listar_usuarios') }}">
+                <button data-toggle='tooltip' data-placement='top' title='Borrar el Usuario' class="btn btn-warning  btn-sm" type="button"> 
+                        Eliminar Registro
+                    </button>
+                </a>
+                
+                <span>&nbsp;</span>
+                
+                <a href="{{ url_for('listar_usuarios') }}">
+                <button data-toggle='tooltip' data-placement='top' title='Retornar a la página anterior' class="btn btn-danger  btn-sm" type="button"> 
+                        Cancelar
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+        {% endblock %}
+

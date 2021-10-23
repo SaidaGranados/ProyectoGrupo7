@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+{% block contenido %}
+
+<body>
+    <div class="container py-2">
+
+        <form action="{{url_for ('guardar_productos') }}" method='POST' novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <div>
+
+                <div
+                    class="row negrita col-xs-12 col-sm-12 col-md-12 col-lg-12 justify-content-center align-self-center">
+                    <span>
+                        <h5>CREAR NUEVO PRODUCTO</h5>
+                    </span>
+                </div>
+                <br>
+
+                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                        <label for="" style="font-weight:bold; color:black; ">{{ form.id_producto.label }}</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        {{ form.id_producto (placeholder = "Mínimo 6 caracteres.") }}
+
+                        {% if form.id_producto.errors %}
+                            <span style="font-size: 9px; color: red; font-family: tahoma;">{{ mensaje }}</span>
+                        {% endif %}
+
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                        <label for="" style="font-weight:bold; color:black; ">{{ form.producto.label }}</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="width: 100%;">
+                        {{ form.producto(placeholder="Mínimo 6 caracteres.") }}
+
+                        {% if form.producto.errors %}
+                            <span style="font-size: 9px; color: red; font-family: tahoma;">{{ mensaje }}</span>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <br>
+                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                        <label for="" style="font-weight:bold; color:black; ">{{ form.descripcion.label }}</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        {{ form.descripcion(placeholder="Mínimo 10 caracteres.") }}
+
+                        {% if form.descripcion.errors %}
+                        <span style="font-size: 9px; color: red; font-family: tahoma;">{{ mensaje }}</span><br><br>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                        <label for="" style="font-weight:bold; color:black; ">{{ form.cantidad_minima.label }}</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        {{ form.cantidad_minima(placeholder="Utiliza el punto para decimal.") }}
+                        {% if form.cantidad_minima.errors %}
+                        <span style="font-size: 9px; color: red; font-family: tahoma;">{{ mensaje }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                        <label for="" style="font-weight:bold; color:black; ">{{ form.cantidad_disponible.label }}</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        {{ form.cantidad_disponible(placeholder="Escribe un número entero.") }}
+                        {% if form.cantidad_disponible.errors %}
+                        <span style="font-size: 9px; color: red; font-family: tahoma;">{{ mensaje }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+            <hr>
+
+
+            <div>
+                {% for mess in get_flashed_messages()  %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{mess}}
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 py-2 px-5 justify-content-center align-self-center">
+
+                <button data-toggle='tooltip' data-placement='top' title='Crear un nuevo producto'
+                    class="btn btn-success  btn-sm" type="submit">
+                    Grabar Registro
+                </button>
+
+                <span>&nbsp;</span>
+
+                <a href="{{ url_for('listar_productos') }}">
+                    <button data-toggle='tooltip' data-placement='top' title='Retornar a la página anterior'
+                        class="btn btn-danger  btn-sm" type="button">
+                        Cancelar
+                    </button>
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+{% endblock %}
