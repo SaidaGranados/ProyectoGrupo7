@@ -1,4 +1,4 @@
-# ProyectoGrupo7 Proyecto Mision Tic 2021
+# ProyectoGrupo7 - Mision Tic 2021
 
 # App Notas  🚘
 
