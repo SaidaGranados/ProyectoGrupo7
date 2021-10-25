@@ -216,8 +216,8 @@ class usuarios():
         if obj:
             if len(obj) > 0:
                 if check_password_hash(obj[0]["contrasena_usu"],self.contrasena_usu):                    
-                    return True
-        return False
+                    return ['True', obj[0]['cod_rol'], obj[0]['cod_usu']]
+        return ['False']
 
 
     @staticmethod

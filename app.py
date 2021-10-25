@@ -1,13 +1,12 @@
-# Importamos la libreia yagmail
+# Importamos la libreria yagmail
 import os
-
 # Importamos libreria verificar usuario autenticado
 import functools
 
 #import yagmail as yagmail
 # Importamos la clase flask
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, g, session
 
 from forms import FormAddProveedores, FormElimProveedores, FormAsociarProveedores, FormEditarUsuarios, FormElimUsuarios, FormRegistroUsuarios, Login, FormCrear_prod, FormAsociar_prod, FormElim_prod, FormListarProd_Prov, FormListarProv_Prod
 
@@ -21,8 +20,40 @@ from models import productos, proveedores, prod_a_prov, prov_a_prod, usuarios
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
 
-# Ruta index
+# Decorador para verificar que el usuario es autenticado
+# INICIAR SESION
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        
+        if g.user is None:
+            return redirect( url_for('index'))
+        
+        return view(**kwargs)
+    
+    return wrapped_view
 
+
+#Este decorador hace que flask ejecute la funcion definida 
+#antes de que las peticiones ejecuten la función controladora que solicitan.
+@app.before_request
+def cargar_usuario_autenticado():
+    cod_usu = session.get('cod_usu')
+    if cod_usu is None:
+        g.user = None
+    else:
+        g.user = usuarios.cargar(cod_usu)
+
+# LOGOUT
+@app.route('/logout/')
+@login_required
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+
+# Ruta index - login
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == "GET":
@@ -39,10 +70,15 @@ def index():
             usr_id = usr_id.replace("'","")
             pwd = pwd.replace("'","")
 
-            objeto_usuarios = usuarios(0,usr_id,'', pwd, '') 
+            objeto_usuarios = usuarios(0,usr_id,'', pwd, '')              
+            respuestaAutenticar =objeto_usuarios.autenticar()
+
+            if respuestaAutenticar[0] == 'True':
+                session.clear()
+                session["cod_usu"] = respuestaAutenticar[2]
+                return redirect(url_for('modulos'))
 
 
-            if objeto_usuarios.autenticar():
                 flash(
                     f" El Usuario: {formulario.identificacion.data.upper() }, se ha logueado en el Sistema correctamente.")
                 return redirect(url_for('modulos'))
@@ -57,6 +93,7 @@ def index():
 
 
 @app.route('/modulos/usuario')
+@login_required
 def modulos():
     return render_template('modulos.html')
 
