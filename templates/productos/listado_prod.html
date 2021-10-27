@@ -27,50 +27,64 @@
                     </thead>
                     <tbody>
                         {% if lista %}
-                            {% for item in lista %}
+                        {% for item in lista %}
 
-                            <tr>
-                                <td>{{ item.id_producto }}</td>
-                                <td>{{ item.producto }}</td>
-                                <td>{{ item.descripcion }}</td>
-                                <td class="text-right">{{ item.cantidad_minima }}</td>
-                                <td class="text-right">{{ item.cantidad_disponible }}</td>
-                                {% if item.cantidad_minima >  item.cantidad_disponible%}
-                                    <td class="text-right" style="color: red;">{{ (item.cantidad_minima - item.cantidad_disponible) | round(2) }}
-                                        
+                        <tr>
+                            <td>{{ item.id_producto }}</td>
+                            <td>{{ item.producto }}</td>
+                            <td>{{ item.descripcion }}</td>
+                            <td class="text-right">{{ item.cantidad_minima }}</td>
+                            <td class="text-right">{{ item.saldo_cant }}</td>
+                            {% if item.cantidad_minima >  item.saldo_cant%}
+                            <td class="text-right" style="color: red;">
+                                {{ (item.cantidad_minima - item.saldo_cant) | round(2) }}
 
-                                    </td>
-                                {% else %}
-                                    <td class="text-right" style="color: blue;"></td>
+
+                            </td>
+                            {% else %}
+                            <td class="text-right" style="color: blue;">Stock Disponible</td>
+                            {% endif %}
+                            <td>
+                                {% if  g.user.cod_rol == 1 or g.user.cod_rol == 2 %}
+                                <a href="{{ url_for('editar_productos', cod_prod =  item.cod_prod) }}">
+                                    <button data-toggle='tooltip' data-placement='top' title='Editar'
+                                        class='btn btn-outline-primary btn-sm btnEditar'>
+                                        <i class='fas fa-pencil-alt fa-sm' aria-hidden='true' title='Editar'>
+                                        </i>
+                                    </button>
+                                </a>
+
+                                <a href="{{ url_for('eliminar_productos', cod_prod =  item.cod_prod) }}">
+                                    <button data-toggle='tooltip' data-placement='top' title='Eliminar'
+                                        class='btn btn-outline-danger btn-sm btnBorrar'>
+                                        <i class='far fa-trash-alt fa-sm' aria-hidden='true' title='Eliminar'>
+                                        </i>
+                                    </button>
+                                </a>
+
+                                <a href="{{ url_for('asociar_proveedor_a_producto', cod_prod =  item.cod_prod) }}">
+                                    <button data-toggle='tooltip' data-placement='top' title='Asociar Proveedor'
+                                        class='btn btn-outline-info btn-sm btnAsociar'>
+                                        <i class='fa fa-exchange    fa-sm' aria-hidden='true' title='Asociar Proveedor'>
+                                        </i>
+                                    </button>
+                                </a>
+
+                                <a href="{{ url_for('inv_producto', cod_prod =  item.cod_prod) }}">
+                                    <button data-toggle='tooltip' data-placement='top'
+                                        title='Agregar Registro Inventario'
+                                        class='btn btn-outline-light btn-sm btnInventario'>
+                                        <i class='fas fa-calculator    fa-sm' aria-hidden='true' style="color:purple;" title='Agregar Registro Inventario'>
+                                        </i>
+                                    </button>
+                                </a>
                                 {% endif %}
-                                <td>
-                                    <a href="{{ url_for('editar_productos', cod_prod =  item.cod_prod) }}">
-                                        <button data-toggle='tooltip' data-placement='top' title='Editar'
-                                            class='btn btn-outline-primary btn-sm btnEditar'>
-                                            <i class='fas fa-pencil-alt fa-sm' aria-hidden='true' title='Editar'>
-                                            </i>
-                                        </button>
-                                    </a>
 
-                                    <a href="{{ url_for('eliminar_productos', cod_prod =  item.cod_prod) }}">
-                                        <button data-toggle='tooltip' data-placement='top' title='Eliminar'
-                                            class='btn btn-outline-danger btn-sm btnBorrar'>
-                                            <i class='far fa-trash-alt fa-sm' aria-hidden='true' title='Eliminar'>
-                                            </i>
-                                        </button>
-                                    </a>
 
-                                    <a href="{{ url_for('asociar_proveedor_a_producto', cod_prod =  item.cod_prod) }}">
-                                        <button data-toggle='tooltip' data-placement='top' title='Asociar Proveedor'
-                                            class='btn btn-outline-info btn-sm btnAsociar'>
-                                            <i class='fa fa-exchange    fa-sm' aria-hidden='true' title='Asociar Proveedor'>
-                                            </i>
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
+                            </td>
+                        </tr>
 
-                            {% endfor %}
+                        {% endfor %}
                         {% else %}
                         <tr>
                             <td class="col-sm-12">No existe ningún producto en el listado.</td>
@@ -84,21 +98,23 @@
             </div>
             <hr>
             <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 py-2">
+                {% if  g.user.cod_rol == 1 or g.user.cod_rol == 2 %}
                 <a href="{{ url_for('guardar_productos') }}">
                     <button data-toggle='tooltip' data-placement='top' title='Crear un nuevo producto'
                         class="btn btn-primary  btn-sm" type="button">
                         Crear un Producto
                     </button>
                 </a>
-
+                {% endif %}
                 <span>&nbsp;</span>
-
+                
                 <a href="{{ url_for('modulos') }}">
                     <button data-toggle='tooltip' data-placement='top' title='Retornar a la página anterior'
                         class="btn btn-danger  btn-sm" type="button">
                         Retornar
                     </button>
                 </a>
+                
             </div>
         </div>
     </div>

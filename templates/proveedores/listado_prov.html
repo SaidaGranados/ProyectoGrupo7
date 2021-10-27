@@ -33,6 +33,7 @@
                                 <td>{{ item.telef_prov }}</td>
                                 <td>{{ item.direccion_prov }}</td>
                                 <td>
+                                    {% if  g.user.cod_rol == 1%}
                                     <a href="{{ url_for('editar_proveedores', cod_prov =  item.cod_prov) }}">
                                         <button data-toggle="tooltip" data-placement="top" title="Editar"
                                             class="btn btn-outline-primary btn-sm btnEditar">
@@ -54,6 +55,7 @@
                                             <i class='fa fa-exchange fa-sm' aria-hidden='true' title='Asociar Producto'></i>
                                         </button>
                                     </a>
+                                    {% endif %}
                                 </td>
                             </tr>
 
@@ -70,12 +72,14 @@
             </div>
             <hr>
             <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 py-2">
+                {% if  g.user.cod_rol == 1%}
                 <a href="{{ url_for('guardar_proveedores') }}">
                     <button data-toggle='tooltip' data-placement='top' title='Crear un nuevo proveedor'
                         class="btn btn-primary  btn-sm" type="button">
                         Crear un Proveedor
                     </button>
                 </a>
+                {% endif %}
                 <span>&nbsp;</span>
                 <a href="{{ url_for('modulos') }}">
                     <button data-toggle='tooltip' data-placement='top' title='Retornar a la página anterior'

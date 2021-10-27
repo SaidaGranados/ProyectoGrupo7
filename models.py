@@ -7,6 +7,18 @@ from werkzeug.security import generate_password_hash,check_password_hash
 # __Privated
 # Sin guión, es Public
 
+class inventario():
+    cod_prod = 0
+    cant_mov = 0
+
+    def __init__(self, pcod_prod, pcant_mov):
+        self.cod_prod = pcod_prod
+        self.cant_mov = pcant_mov
+
+    def insertar_inv(self):
+        sql = "insert into inventario (cod_prod, cant_mov) values (?, ?); "
+        afectadas = db.ejecutar_insert(sql, [self.cod_prod, self.cant_mov])
+        return (afectadas > 0)
 
 class prov_a_prod():
     cod_prod = 0
@@ -105,12 +117,12 @@ class proveedores():
 
     @classmethod
     def productos_prov(cls, pcod_prov):
-        sql = "SELECT proveedores.cod_prov, proveedores.id_prov, proveedores.nombre_prov, proveedores.direccion_prov, proveedores.telef_prov, prov_prod.cod_prod, productos.id_producto, productos.producto, productos.descripcion, productos.cantidad_minima, productos.cantidad_disponible FROM (prov_prod LEFT OUTER JOIN productos ON (prov_prod.cod_prod = productos.cod_prod)) INNER JOIN proveedores ON (proveedores.cod_prov = prov_prod.cod_prov) where proveedores.cod_prov = ?; "
+        sql = "SELECT proveedores.cod_prov, proveedores.id_prov, proveedores.nombre_prov, proveedores.direccion_prov, proveedores.telef_prov, prov_prod.cod_prod, productos.id_producto, productos.producto, productos.descripcion, productos.cantidad_minima FROM (prov_prod LEFT OUTER JOIN productos ON (prov_prod.cod_prod = productos.cod_prod)) INNER JOIN proveedores ON (proveedores.cod_prov = prov_prod.cod_prov) where proveedores.cod_prov = ?; "
         return db.prov_select(sql, [pcod_prov])
     
     @classmethod
     def proveedor_prod(cls, pcod_prod):
-        sql = "SELECT proveedores.cod_prov, proveedores.id_prov, proveedores.nombre_prov, proveedores.direccion_prov, proveedores.telef_prov, prov_prod.cod_prod, productos.cod_prod, productos.id_producto, productos.producto, productos.descripcion, productos.cantidad_minima, productos.cantidad_disponible FROM (prov_prod LEFT OUTER JOIN productos ON (prov_prod.cod_prod = productos.cod_prod)) INNER JOIN proveedores ON (proveedores.cod_prov = prov_prod.cod_prov) where productos.cod_prod = ?; "
+        sql = "SELECT proveedores.cod_prov, proveedores.id_prov, proveedores.nombre_prov, proveedores.direccion_prov, proveedores.telef_prov, prov_prod.cod_prod, productos.cod_prod, productos.id_producto, productos.producto, productos.descripcion, productos.cantidad_minima FROM (prov_prod LEFT OUTER JOIN productos ON (prov_prod.cod_prod = productos.cod_prod)) INNER JOIN proveedores ON (proveedores.cod_prov = prov_prod.cod_prov) where productos.cod_prod = ?; "
         return db.prov_select(sql, [pcod_prod])
 
     @staticmethod
@@ -135,16 +147,14 @@ class productos():
     producto = ''
     descripcion = ''
     cantidad_minima = ''
-    cantidad_disponible = ''
 
-    def __init__(self, pcod_prod, pid_producto, pproducto, pdescripcion, pcantidad_minima, pcantidad_disponible):
+    def __init__(self, pcod_prod, pid_producto, pproducto, pdescripcion, pcantidad_minima):
         self.cod_prod = pcod_prod  # se agrego
         self.id_producto = pid_producto
         self.producto = pproducto
         self.descripcion = pdescripcion
         self.cantidad_minima = pcantidad_minima
-        self.cantidad_disponible = pcantidad_disponible
-
+        
     @classmethod
     def cargar(cls, pcod_prod):
         sql = "SELECT * FROM productos WHERE cod_prod = ?;"
@@ -152,32 +162,35 @@ class productos():
         if resultado:
             if len(resultado) > 0:
                 return cls(pcod_prod, resultado[0]['id_producto'], resultado[0]["producto"],
-                           resultado[0]["descripcion"], resultado[0]["cantidad_minima"], resultado[0]["cantidad_disponible"])
+                           resultado[0]["descripcion"], resultado[0]["cantidad_minima"])
 
         return None
 
     def insertar(self):
-        sql = "INSERT INTO productos (id_producto, producto, descripcion, cantidad_minima, cantidad_disponible) VALUES (?,?,?,?,?);"
+        sql = "INSERT INTO productos (id_producto, producto, descripcion, cantidad_minima) VALUES (?,?,?,?);"
         afectadas = db.ejecutar_insert(
-            sql, [self.id_producto, self.producto, self.descripcion, self.cantidad_minima, self.cantidad_disponible])
+            sql, [self.id_producto, self.producto, self.descripcion, self.cantidad_minima])
         return (afectadas > 0)
-
+    
     def eliminar(self):
+        sql = "DELETE FROM inventario where cod_prod = ?;"
+        afectadas = db.ejecutar_insert(sql, [self.cod_prod])
+
         sql = "DELETE FROM productos where cod_prod = ?;"
         afectadas = db.ejecutar_insert(sql, [self.cod_prod])
+        
         return (afectadas > 0)
 
     def editar(self):
-        sql = "UPDATE productos SET id_producto = ?, producto = ?, descripcion =  ?, cantidad_minima = ?, cantidad_disponible = ? WHERE cod_prod = ?;"
+        sql = "UPDATE productos SET id_producto = ?, producto = ?, descripcion =  ?, cantidad_minima = ? WHERE cod_prod = ?;"
         afectadas = db.ejecutar_insert(
-            sql, [self.id_producto, self.producto, self.descripcion, self.cantidad_minima, self.cantidad_disponible, self.cod_prod])
+            sql, [self.id_producto, self.producto, self.descripcion, self.cantidad_minima, self.cod_prod])
         return (afectadas > 0)
 
     @staticmethod
     def listado():
-        sql = "SELECT * FROM productos ORDER BY producto;"
+        sql = "SELECT productos.cod_prod, productos.id_producto, productos.producto, productos.descripcion, productos.cantidad_minima, ifnull(Subquery.saldo, 0) AS saldo_cant FROM productos LEFT OUTER JOIN (SELECT inventario.cod_prod, sum(inventario.cant_mov) AS saldo FROM inventario GROUP BY inventario.cod_prod) Subquery ON (productos.cod_prod = Subquery.cod_prod) ORDER BY productos.producto ASC;"
         return db.ejecutar_select(sql, None)
-    
 
     @staticmethod
     def listado_prov():
@@ -269,4 +282,3 @@ class usuarios():
     def listado_usu():
         sql = "SELECT * From usuarios order by nombre_usu; "
         return db.usu_select(sql, None)      
-

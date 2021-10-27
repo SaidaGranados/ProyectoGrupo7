@@ -7,10 +7,11 @@ import functools
 # Importamos la clase flask
 
 from flask import Flask, render_template, request, redirect, url_for, flash, g, session
+from wtforms.fields.core import DecimalField
 
-from forms import FormAddProveedores, FormElimProveedores, FormAsociarProveedores, FormEditarUsuarios, FormElimUsuarios, FormRegistroUsuarios, Login, FormCrear_prod, FormAsociar_prod, FormElim_prod, FormListarProd_Prov, FormListarProv_Prod
+from forms import FormAddProveedores, FormElimProveedores, FormAsociarProveedores, FormEditarUsuarios, FormInv_prod, FormRegistroUsuarios, Login, FormCrear_prod, FormAsociar_prod, FormElim_prod, FormListarProd_Prov, FormListarProv_Prod
 
-from models import productos, proveedores, prod_a_prov, prov_a_prod, usuarios
+from models import productos, proveedores, prod_a_prov, prov_a_prod, usuarios, inventario
 
 # Importamos las validaciones
 # from validaciones import *
@@ -51,8 +52,6 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-
-
 # Ruta index - login
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -79,8 +78,7 @@ def index():
                 return redirect(url_for('modulos'))
 
 
-                flash(
-                    f" El Usuario: {formulario.identificacion.data.upper() }, se ha logueado en el Sistema correctamente.")
+                flash(f" El Usuario: {formulario.identificacion.data.upper() }, se ha logueado en el Sistema correctamente.")
                 return redirect(url_for('modulos'))
             else:
                 return render_template('index.html', mensaje = "Identificacion de usuario o contraseña incorrecta.", form=formulario)
@@ -209,9 +207,9 @@ def guardar_productos():
     else:
         formulario = FormCrear_prod(request.form)
         if formulario.validate_on_submit():
+            
             objeto_productos = productos(0, formulario.id_producto.data, formulario.producto.data,
-            formulario.descripcion.data, formulario.cantidad_minima.data, formulario.cantidad_disponible.data) 
-
+            formulario.descripcion.data, formulario.cantidad_minima.data)
            
             if objeto_productos.insertar():
                 flash(f"El producto: {formulario.producto.data.upper()}, ha sido creado correctamente." )
@@ -237,7 +235,7 @@ def editar_productos(cod_prod): #se agregó (id_producto)
             formulario.producto.data = objeto_productos.producto
             formulario.descripcion.data = objeto_productos.descripcion
             formulario.cantidad_minima.data = objeto_productos.cantidad_minima
-            formulario.cantidad_disponible.data = objeto_productos.cantidad_disponible
+            
             return render_template('productos/edit_productos.html', id=objeto_productos.cod_prod, form=formulario)
         else:
             return render_template('productos/edit_productos.html', mensaje = "El Formulario presenta error al intentar traer datos de la Base de Datos.", form=formulario)
@@ -251,7 +249,7 @@ def editar_productos(cod_prod): #se agregó (id_producto)
             # Creamos un objeto con la Clase constructora provductos() del archivo models.py
             objeto_productos = productos(
                 cod_prod, formulario.id_producto.data, formulario.producto.data,
-            formulario.descripcion.data, formulario.cantidad_minima.data, formulario.cantidad_disponible.data) 
+            formulario.descripcion.data, formulario.cantidad_minima.data) 
 
             if objeto_productos.editar():
                 flash(f"El producto: {formulario.producto.data.upper() }, ha sido actualizado correctamente.")
@@ -262,7 +260,6 @@ def editar_productos(cod_prod): #se agregó (id_producto)
                 return render_template('productos/edit_productos.html', mensaje = "l Formulario presenta error al intentar actualizarlo en la Base de Datos.", id=cod_prod, form=formulario)
         else:
             return render_template('productos/edit_productos.html', mensaje="Verificar, existe error en este campo.", id=cod_prod, form=formulario)
-
 
 
 @app.route('/productos/eliminar/<cod_prod>', methods = ["GET", "POST"])
@@ -277,7 +274,7 @@ def eliminar_productos(cod_prod):
             formulario.producto.data = objeto_productos.producto
             formulario.descripcion.data = objeto_productos.descripcion
             formulario.cantidad_minima.data = objeto_productos.cantidad_minima
-            formulario.cantidad_disponible.data = objeto_productos.cantidad_disponible
+            
             
             return render_template('productos/elim_productos.html', id=objeto_productos.cod_prod, form=formulario)
         
@@ -291,8 +288,7 @@ def eliminar_productos(cod_prod):
             objeto_productos = productos.cargar(cod_prod)
 
             objeto_productos = productos(cod_prod, formulario.id_producto,
-            formulario.producto, formulario.descripcion, formulario.cantidad_minima,
-            formulario.cantidad_disponible)
+            formulario.producto, formulario.descripcion, formulario.cantidad_minima)
 
             if objeto_productos.eliminar():
                 
@@ -342,7 +338,7 @@ def asociar_proveedor_a_producto(cod_prod):
                 if int(lista_prov[i]["cod_prov"]) == int(cod_prov):
                     nombre_prov = lista_prov[i]["nombre_prov"]
             
-            objeto_producto = prod_a_prov(cod_prov, cod_prod)
+            objeto_producto =   (cod_prov, cod_prod)
             
             if objeto_producto.asociar_prod_a_prov():
                 flash(f" El Proveedor: { nombre_prov }, ha sido asociado al Producto {formulario.producto.data.upper() } en el Sistema correctamente.")
@@ -393,9 +389,6 @@ def buscar_proveedor_por_productos():
             else:
                 
                 return render_template('productos/buscar_prov.html', lista=proveedores.proveedor_prod(cod_prod),form=formulario)
-                
-            
-    
 
 
 #  Rutas modulo proveedores
@@ -612,3 +605,46 @@ def buscar_productos_por_proveedor():
                 
             
     
+    
+    
+    
+    
+    
+    
+@app.route('/productos/inventario/<cod_prod>', methods=["GET", "POST"])
+def inv_producto(cod_prod): #se agregó (id_producto)
+    if request.method == "GET":
+        
+        formulario = FormInv_prod()
+
+        objeto_productos = productos.cargar(cod_prod)
+
+        if objeto_productos:
+            formulario.id_producto.data = objeto_productos.id_producto
+            formulario.producto.data = objeto_productos.producto
+            formulario.cantidad_mov.data = 0
+            return render_template('productos/inv_productos.html', id=objeto_productos.cod_prod, form=formulario)
+        else:
+            return render_template('productos/inv_productos.html', mensaje = "El Formulario presenta error al intentar traer datos de la Base de Datos.", form=formulario)
+
+    else:
+        
+        formulario = FormInv_prod(request.form)
+
+        if formulario.validate_on_submit():
+
+            tipo_mov = int(formulario.tipo_mov.data) # 1: Entrada, #2 Salida
+            cant_mov = (formulario.cantidad_mov.data)
+            nombre_prod = 'okoko'
+            
+            if(tipo_mov == 2):
+                cant_mov = cant_mov * -1
+            
+            objeto_producto = inventario(cod_prod, cant_mov)
+        
+            if objeto_producto.insertar_inv():
+                flash(f" El Producto: { nombre_prod }, ha recibido un movimiento en el Inventario correctamente.")
+                
+                return render_template('productos/inv_productos.html', mensaje="", id=cod_prod, form=formulario)                
+            else:
+                return render_template('productos/inv_productos.html', mensaje="El Formulario presenta error al intentar actualizarlo en la Base de Datos.", id=cod_prod, form=formulario)

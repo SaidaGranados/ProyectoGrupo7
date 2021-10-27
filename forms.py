@@ -8,8 +8,6 @@ lista_art = proveedores.listado_art()
 lista_prov = productos.listado_prov()
 
 
-
-
 #################################################################
 #####                        USUARIOS              ##############
 #################################################################
@@ -51,12 +49,12 @@ class FormElimUsuarios(FlaskForm):
 
 class FormCrear_prod (FlaskForm):
     style={'style': 'width:100%; font-size:12px; font-family: tahoma;'}
-    id_producto = StringField('Identif. del producto', validators=[validators.required(), validators.length(min=6,max=20)], render_kw=style) 
-    producto = TextField('Nombre del producto', validators=[validators.required(), validators.length(min=6,max=50)], render_kw=style)
-    descripcion = TextAreaField('Descripcion del producto', validators=[validators.required(), validators.length(min=10, max=400)], render_kw=style)
+    id_producto = StringField('Identif. (Referencia): ', validators=[validators.required(), validators.length(min=6,max=20)], render_kw=style) 
+    producto = TextField('Nombre:', validators=[validators.required(), validators.length(min=6,max=50)], render_kw=style)
+    descripcion = TextAreaField('Breve Descripcion:', validators=[validators.required(), validators.length(min=10, max=400)], render_kw=style)
     #cantidad_minima = DecimalField('Cantidad mínima',places=2, validators=[validators.required()])
-    cantidad_minima = FloatField('Cantidad mínima', validators=[validators.required()], render_kw=style)
-    cantidad_disponible = FloatField('Cantidad disponible', validators=[validators.required()], render_kw=style)
+    cantidad_minima = FloatField('Cantidad mínima Stock:', validators=[validators.required()], render_kw=style)
+    
 
 class FormElim_prod (FlaskForm):
     style={'style': 'width:100%;'}
@@ -64,7 +62,7 @@ class FormElim_prod (FlaskForm):
     producto = TextField('Nombre del producto', render_kw=style)
     descripcion = TextAreaField('Descripcion del producto', render_kw=style)
     cantidad_minima = FloatField('Cantidad mínima')
-    cantidad_disponible = FloatField('Cantidad disponible')
+    
 
 
 class FormAsociar_prod(FlaskForm):
@@ -73,16 +71,28 @@ class FormAsociar_prod(FlaskForm):
     producto = TextField('Nombre del Producto:', validators=[validators.required()], render_kw=style)
     
     sel_prov = SelectField('Asignar Proveedor:', validators=[validators.required()],render_kw=style, choices = [(lista_prov[i]["cod_prov"], lista_prov[i]["nombre_prov"]) for i in range(len(lista_prov))])
+
+
+class FormInv_prod(FlaskForm):
+    style={'style': 'width:100%; font-size:12px; font-family: tahoma;'}
+    
+    id_producto = StringField('Identif. del producto', validators=[validators.required(), validators.length(min=6,max=20)], render_kw=style) 
+    
+    producto = TextField('Nombre del producto', validators=[validators.required(), validators.length(min=6,max=50)], render_kw=style)
+    
+    tipo_mov = SelectField('Tipo Movimiento:', validators=[validators.required()],render_kw=style, choices=[(1,"Entrada"),(2,"Salida")])
+
+    cantidad_mov = FloatField('Cantidad:', validators=[validators.required()], render_kw=style)
     
 
-#################################################################
+#################################################################|
 #####                        PROVEEDORES           ##############
 #################################################################
 
 class FormAddProveedores(FlaskForm):
     style={'style': 'width:100%;'}
     
-    id_prov = StringField('Identif. del Proveedor:', validators=[validators.required(),validators.length(min=6,max=20)], render_kw=style)
+    id_prov = StringField('Nit / CC: ', validators=[validators.required(),validators.length(min=6,max=20)], render_kw=style)
     nombre_prov = StringField('Nombre del Proveedor:', validators=[validators.required(),validators.length(min=6,max=50)], render_kw=style)
     direccion_prov = StringField('Dirección del Proveedor:', validators=[validators.required(),validators.length(min=6,max=150)], render_kw=style)
     telef_prov = StringField('Telf. Proveedor:', validators=[validators.length(min=6,max=20)], render_kw=style)
