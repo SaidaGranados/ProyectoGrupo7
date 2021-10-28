@@ -19,7 +19,7 @@ from models import productos, proveedores, prod_a_prov, prov_a_prod, usuarios, i
 # Creo la variable app se le asigna una instancia de Flask que recibe de parametro la variable de entorno name
 # que es el nombre del modulo que se esta ejecutando osea app.py
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(32)
+app.config['SECRET_KEY'] = "86272a371c5acfb485b4701c837b922ab6d99134ad679002c36ebb136ad18412"
 
 # Decorador para verificar que el usuario es autenticado
 # INICIAR SESION
