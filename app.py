@@ -90,7 +90,7 @@ def index():
 # Ruta modulos
 
 
-@app.route('/modulos/usuario')
+@app.route('/')
 @login_required
 def modulos():
     return render_template('modulos.html')
