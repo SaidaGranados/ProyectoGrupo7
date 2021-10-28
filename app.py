@@ -53,7 +53,7 @@ def logout():
     return redirect(url_for('index'))
 
 # Ruta index - login
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == "GET":
         formulario = Login()
