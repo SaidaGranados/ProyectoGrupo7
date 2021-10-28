@@ -19,7 +19,7 @@ from models import productos, proveedores, prod_a_prov, prov_a_prod, usuarios, i
 # Creo la variable app se le asigna una instancia de Flask que recibe de parametro la variable de entorno name
 # que es el nombre del modulo que se esta ejecutando osea app.py
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "86272a371c5acfb485b4701c837b922ab6d99134ad679002c36ebb136ad18412"
+app.config['SECRET_KEY'] = os.urandom(32)
 
 # Decorador para verificar que el usuario es autenticado
 # INICIAR SESION
@@ -53,7 +53,7 @@ def logout():
     return redirect(url_for('index'))
 
 # Ruta index - login
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == "GET":
         formulario = Login()
@@ -338,7 +338,7 @@ def asociar_proveedor_a_producto(cod_prod):
                 if int(lista_prov[i]["cod_prov"]) == int(cod_prov):
                     nombre_prov = lista_prov[i]["nombre_prov"]
             
-            objeto_producto =   (cod_prov, cod_prod)
+            objeto_producto =   prod_a_prov(cod_prov, cod_prod)
             
             if objeto_producto.asociar_prod_a_prov():
                 flash(f" El Proveedor: { nombre_prov }, ha sido asociado al Producto {formulario.producto.data.upper() } en el Sistema correctamente.")
@@ -348,7 +348,7 @@ def asociar_proveedor_a_producto(cod_prod):
                 return render_template('productos/asociar_prov.html', mensaje="El Formulario presenta error al intentar actualizarlo en la Base de Datos.", id=cod_prod, form=formulario)
             
         else:
-            return render_template('productos/asociar_prov.html', mensaje="Este campo del Fomulario presenta error, favor verificar.", id=cod_prod, form=formulario)
+            return render_template('productos/asociar_prov.html', mensaje="Este campos del Fomulario presenta error, favor verificar.", id=cod_prod, form=formulario)
 
 
 @app.route('/productos/buscarproveedorporproductos', methods=['GET', 'POST'])
@@ -603,7 +603,7 @@ def buscar_productos_por_proveedor():
                 
                 return render_template('proveedores/buscar_prod.html', lista=proveedores.productos_prov(cod_prov),form=formulario)
                 
-            
+        
     
     
     
