@@ -9,3 +9,4 @@ Consideraciones importantes del proyecto
 - Framework Flask
 - Diseño de base de datos relacional SQLite
 - Despliegue de la aplicacion WEB en Servidor de la nube
+- https://geely-app.herokuapp.com/
